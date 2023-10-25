@@ -1,5 +1,6 @@
-import { Chess } from "chess.js";
-import { useState } from "react";
+import { Chess } from 'chess.js';
+import { useState } from 'react';
+import { useLocalStorage } from 'usehooks-ts';
 
 const storedGames = new Map();
 
@@ -11,23 +12,26 @@ const storedGames = new Map();
  * @param key A unique key for the game.
  */
 export default function useChessGame(
-  key: string,
-  initFunction?: (game: WatchableChess) => void
+  key: string
 ): [WatchableChess, string, string] {
+  // maintain our game state in local storage
+  const [pgn, setPgn] = useLocalStorage(key + '-pgn', '');
+
   let game: WatchableChess;
+
   if (storedGames.has(key)) {
     game = storedGames.get(key);
   } else {
     game = new WatchableChess();
-    initFunction?.(game);
+    if (pgn) game.loadPgn(pgn);
     storedGames.set(key, game);
   }
 
   const [fen, setFen] = useState(game.fen());
-  const [pgn, setPgn] = useState(game.pgn());
+
   game.setMutateHook((game) => {
-    setFen(game.fen());
     setPgn(game.pgn());
+    setFen(game.fen());
   });
 
   return [game, fen, pgn];
@@ -41,28 +45,28 @@ export default function useChessGame(
 export class WatchableChess extends Chess {
   private onMutate?: (game: WatchableChess) => void;
 
-  clear(...args: Parameters<Chess["clear"]>) {
+  clear(...args: Parameters<Chess['clear']>) {
     return this.mutateHook(super.clear(...args));
   }
-  load(...args: Parameters<Chess["load"]>) {
+  load(...args: Parameters<Chess['load']>) {
     return this.mutateHook(super.load(...args));
   }
-  loadPgn(...args: Parameters<Chess["loadPgn"]>) {
+  loadPgn(...args: Parameters<Chess['loadPgn']>) {
     return this.mutateHook(super.loadPgn(...args));
   }
-  move(...args: Parameters<Chess["move"]>) {
+  move(...args: Parameters<Chess['move']>) {
     return this.mutateHook(super.move(...args));
   }
-  put(...args: Parameters<Chess["put"]>) {
+  put(...args: Parameters<Chess['put']>) {
     return this.mutateHook(super.put(...args));
   }
-  remove(...args: Parameters<Chess["remove"]>) {
+  remove(...args: Parameters<Chess['remove']>) {
     return this.mutateHook(super.remove(...args));
   }
-  reset(...args: Parameters<Chess["reset"]>) {
+  reset(...args: Parameters<Chess['reset']>) {
     return this.mutateHook(super.reset(...args));
   }
-  undo(...args: Parameters<Chess["undo"]>) {
+  undo(...args: Parameters<Chess['undo']>) {
     return this.mutateHook(super.undo(...args));
   }
   mutateHook<T>(value: T): T {

@@ -11,3 +11,5 @@ the chess object "reactive".
 
 The `useChessGame` returns a tuple consisting of the chess game
 object, the current FEN state, and the current PGN state.
+
+The game state is persisted between page loads via localstorage.
