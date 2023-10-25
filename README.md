@@ -12,6 +12,15 @@ the chess object "reactive".
 The `useChessGame` returns a tuple consisting of the chess game
 object, the current FEN state, and the current PGN state.
 
+## How to run
+
+1. Clone this repository
+2. Run `npm install`
+3. Run `npm run dev`
+4. Visit <http://localhost:5173> in your browser of choice.
+5. Play some chess
+6. Reload the page and observe that the game state persists
+
 ## Notes and testing plan
 
 - The game state is persisted between page loads via localstorage.
